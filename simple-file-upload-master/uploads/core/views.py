@@ -5,6 +5,7 @@ from django.core.files.storage import FileSystemStorage
 from uploads.core.models import Document
 from uploads.core.forms import DocumentForm
 import pandas as pd
+data = []
 
 def home(request):
     documents = Document.objects.all()
@@ -17,12 +18,12 @@ def simple_upload(request):
         fs = FileSystemStorage()
         filename = fs.save(myfile.name, myfile)
         uploaded_file_url = fs.url(filename)
-        print("uploaded_file_url : " +uploaded_file_url)
-        data = pd.read_excel (uploaded_file_url) 
+        print("uploaded_file_url 123 : " +uploaded_file_url)
+        data = pd.ExcelFile (myfile) 
         df = data.sheet_names
-        print(df)
         return render(request, 'core/simple_upload.html', {
-            'uploaded_file_url': uploaded_file_url
+            'uploaded_file_url': uploaded_file_url,
+            "df_sheetName" : df
         })
     return render(request, 'core/simple_upload.html')
 
@@ -41,3 +42,14 @@ def model_form_upload(request):
     return render(request, 'core/model_form_upload.html', {
         'form': form
     })
+
+
+def validation123(request):
+    if request.method == 'POST':
+        
+        data = request.POST.get("reqdatalist")
+        print("done!!!")
+        
+        return render(request, 'core/simple_upload.html')
+
+print(data)
