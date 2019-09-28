@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% load static %}
+<link href="{% static 'css/style.css' %}" rel="stylesheet" type="text/css"/>
 
 {% block content %}
   <form method="post" enctype="multipart/form-data">
@@ -11,16 +12,70 @@
 
   {% if uploaded_file_url %}
    
-    <p>File uploaded at: <a href="{{ uploaded_file_url }}">{{ uploaded_file_url }}</a></p> <button id="showFile">ShowFile</button>
+    <p>File uploaded at: <a href="{{ uploaded_file_url }}">{{ uploaded_file_url }}</a> </p>
+    <ul id="list1">
+    
+        {% for author in df_sheetName %}
+           <li id="{{ author|safe }}">{{ author|safe }}</li>
+        {% endfor %}
+     
+    </ul>
+    
   {% endif %}
 
+  <br></br>
+ <br></br>
+ <br></br>
+ <br></br>
+ <br></br>
+ <br></br>
+ <br></br>
+ <br></br>
+ <br></br>
  
-
   <script>
-    $("#showFile").click(function(){
-      alert("clicked");
-    });
+    (function($) {
+    
+    $('#list1').sortable({
+        connectWith: 'ul'
+    });    
+    
+    $('#list2').sortable({
+        connectWith: 'ul',
+        receive: function(ev, ui) {
+            if(ui.item.hasClass("number"))
+              ui.sender.sortable("cancel");
+        }
+    });    
+    })(jQuery);
   </script>
 
-  <p><a href="{% url 'home' %}">Return to home</a></p>
+<button id="Validate">Validate the Excel</button>
+
+<script type="text/javascript"> window.CSRF_TOKEN = "{{ csrf_token }}"; </script>
+<script>
+
+$("#Validate").click(function() {
+  
+  var listtosend = [];
+  
+  var value = $('#list1 li').each(function (index, value){
+    var link = $(this).attr('id');
+    listtosend.push(link)
+    
+    });
+  alert("value : "+value);
+  alert("listtosend : "+listtosend);
+  $.ajax({
+            type: 'POST',
+            url: "uploads/validate/",
+            data: {csrfmiddlewaretoken: window.CSRF_TOKEN,
+            reqdatalist:listtosend},
+            success: function() {
+                console.log("Success!");
+            }
+        })
+      });
+</script>
+  
 {% endblock %}
