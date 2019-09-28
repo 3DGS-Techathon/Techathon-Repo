@@ -15,14 +15,18 @@ def home(request):
 def simple_upload(request):
     if request.method == 'POST' and request.FILES['myfile']:
         myfile = request.FILES['myfile']
+        myjson = request.FILES['myjson']
         fs = FileSystemStorage()
         filename = fs.save(myfile.name, myfile)
+        filenamejson = fs.save(myjson.name, myjson)
+        uploaded_json_url = fs.url(filenamejson)
         uploaded_file_url = fs.url(filename)
         print("uploaded_file_url 123 : " +uploaded_file_url)
         data = pd.ExcelFile (myfile) 
         df = data.sheet_names
         return render(request, 'core/simple_upload.html', {
             'uploaded_file_url': uploaded_file_url,
+            'uploaded_json_url': uploaded_json_url,
             "df_sheetName" : df
         })
     return render(request, 'core/simple_upload.html')
